@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuth } from '@/context/AuthContext'
 
 /**
  * LoginFormShadcn Component
@@ -23,6 +24,8 @@ export default function LoginFormShadcn() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  
+  const { login } = useAuth()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -39,30 +42,10 @@ export default function LoginFormShadcn() {
     setError('')
 
     try {
-      // TODO: Replace this placeholder with actual Supabase authentication
-      // Example implementation:
-      // const { data, error } = await supabase.auth.signInWithPassword({
-      //   email: formData.email,
-      //   password: formData.password
-      // })
-      // 
-      // if (error) throw error
-      // 
-      // // Handle successful login (redirect, update context, etc.)
-      // router.push('/dashboard')
-
-      // Placeholder implementation - remove this in production
-      console.log('Login attempt:', formData)
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Simulate error for demo purposes
-      throw new Error('Authentication not yet implemented. Please integrate Supabase auth.')
-
+      await login(formData.email, formData.password)
+      // Redirect will be handled by the auth context
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.'
-      setError(errorMessage)
+      setError('Invalid email or password')
     } finally {
       setIsLoading(false)
     }
@@ -136,7 +119,7 @@ export default function LoginFormShadcn() {
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Don't have an account? </span>
               <Link 
-                href="/auth/register"
+                href="/auth/register-shadcn"
                 className="text-primary hover:underline font-medium"
               >
                 Sign up

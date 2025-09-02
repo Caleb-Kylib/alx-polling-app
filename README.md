@@ -42,7 +42,9 @@ ai-polling-app/
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **State Management**: React Context API
-- **Authentication**: Custom auth context (ready for backend integration)
+- **Authentication**: Supabase Auth with custom context
+- **Database**: Supabase PostgreSQL with Row Level Security
+- **Real-time**: Supabase Realtime subscriptions
 
 ## 🚀 Getting Started
 
@@ -50,6 +52,7 @@ ai-polling-app/
 
 - Node.js 18+ 
 - npm or yarn
+- Supabase account (free tier available)
 
 ### Installation
 
@@ -66,14 +69,18 @@ ai-polling-app/
    yarn install
    ```
 
-3. **Run the development server**
+3. **Set up Supabase**
+   - Follow the [Supabase Setup Guide](SUPABASE_SETUP.md)
+   - Create your `.env.local` file with your credentials
+
+4. **Run the development server**
    ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📱 Available Routes
@@ -100,19 +107,21 @@ ai-polling-app/
 
 ## 🔐 Authentication
 
-The app includes a complete authentication system:
+The app includes a complete Supabase-powered authentication system:
 
+- **Supabase Auth**: Secure user authentication with email/password
 - **AuthContext**: Manages user state and authentication methods
 - **Protected Routes**: Ready for implementation with route guards
 - **Form Validation**: Client-side validation for login and registration
-- **Session Management**: Local storage-based sessions (ready for backend integration)
+- **Session Management**: Secure session handling with automatic token refresh
+- **Row Level Security**: Database-level security policies
 
 ### Authentication Flow
 
 1. User visits login/register page
-2. Form submission calls auth context methods
-3. Success redirects to dashboard (to be implemented)
-4. User state is maintained across the app
+2. Form submission calls Supabase auth methods
+3. Success creates user session and redirects to dashboard
+4. User state is maintained across the app with real-time updates
 
 ## 🎨 Styling
 
@@ -123,12 +132,13 @@ The app includes a complete authentication system:
 
 ## 📝 TODO
 
-- [ ] Implement backend API integration
+- [x] Implement Supabase backend integration
+- [x] Set up authentication system
 - [ ] Add protected routes and middleware
 - [ ] Create dashboard page for authenticated users
 - [ ] Add polling functionality
-- [ ] Implement real-time updates
-- [ ] Add user profile management
+- [ ] Implement real-time updates with Supabase subscriptions
+- [x] Add user profile management
 - [ ] Implement password reset functionality
 - [ ] Add email verification
 - [ ] Create admin panel

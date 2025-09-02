@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuth } from '@/context/AuthContext'
 
 /**
  * RegisterFormShadcn Component
@@ -18,6 +19,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
  */
 export default function RegisterFormShadcn() {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -25,9 +27,15 @@ export default function RegisterFormShadcn() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  
+  const { register } = useAuth()
 
   const validateField = (name: string, value: string): string => {
     switch (name) {
+      case 'name':
+        if (!value) return 'Name is required'
+        return ''
+        
       case 'email':
         if (!value) return 'Email is required'
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -91,35 +99,10 @@ export default function RegisterFormShadcn() {
     setSubmitError('')
 
     try {
-      // TODO: Replace this placeholder with actual Supabase registration
-      // Example implementation:
-      // const { data, error } = await supabase.auth.signUp({
-      //   email: formData.email,
-      //   password: formData.password,
-      //   options: {
-      //     data: {
-      //       email: formData.email
-      //     }
-      //   }
-      // })
-      // 
-      // if (error) throw error
-      // 
-      // // Handle successful registration (redirect, update context, etc.)
-      // router.push('/auth/verify-email') // or wherever you want to redirect
-
-      // Placeholder implementation - remove this in production
-      console.log('Registration attempt:', { email: formData.email, password: formData.password })
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Simulate error for demo purposes
-      throw new Error('Registration not yet implemented. Please integrate Supabase auth.')
-
+      await register(formData.name, formData.email, formData.password)
+      // Redirect will be handled by the auth context
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.'
-      setSubmitError(errorMessage)
+      setSubmitError('Registration failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -150,6 +133,24 @@ export default function RegisterFormShadcn() {
                 {submitError}
               </div>
             )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                className={`w-full ${hasFieldError('name') ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+              />
+              {hasFieldError('name') && (
+                <p className="text-sm text-destructive">{getFieldError('name')}</p>
+              )}
+            </div>
             
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -228,7 +229,7 @@ export default function RegisterFormShadcn() {
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>
               <Link 
-                href="/auth/login"
+                href="/auth/login-shadcn"
                 className="text-primary hover:underline font-medium"
               >
                 Sign in
