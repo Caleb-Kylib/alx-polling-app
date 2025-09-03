@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -100,6 +100,34 @@ export default function PollDetailPage() {
     return poll.totalVotes > 0 ? Math.round((votes / poll.totalVotes) * 100) : 0
   }
 
+  // Memoized sorted options with pre-calculated percentages
+  const sortedOptionsWithPercentages = useMemo(() => {
+    return poll.options
+      .map(option => ({
+        ...option,
+        percentage: calculatePercentage(option.votes)
+      }))
+      .sort((a, b) => b.votes - a.votes)
+  }, [poll.options, poll.totalVotes])
+
+  // Memoized result option component
+  const ResultOption = ({ option }: { option: typeof sortedOptionsWithPercentages[0] }) => (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="font-medium">{option.text}</span>
+        <span className="text-sm text-muted-foreground">
+          {option.votes} votes ({option.percentage}%)
+        </span>
+      </div>
+      <div className="w-full bg-secondary rounded-full h-2">
+        <div 
+          className="bg-primary h-2 rounded-full transition-all duration-500"
+          style={{ width: `${option.percentage}%` }}
+        />
+      </div>
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-2xl">
@@ -187,27 +215,9 @@ export default function PollDetailPage() {
                 </div>
                 
                 <div className="space-y-3">
-                  {poll.options
-                    .sort((a, b) => b.votes - a.votes)
-                    .map((option) => {
-                      const percentage = calculatePercentage(option.votes)
-                      return (
-                        <div key={option.id} className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium">{option.text}</span>
-                            <span className="text-sm text-muted-foreground">
-                              {option.votes} votes ({percentage}%)
-                            </span>
-                          </div>
-                          <div className="w-full bg-secondary rounded-full h-2">
-                            <div 
-                              className="bg-primary h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      )
-                    })}
+                  {sortedOptionsWithPercentages.map((option) => (
+                    <ResultOption key={option.id} option={option} />
+                  ))}
                 </div>
 
                 <div className="pt-4 border-t">
